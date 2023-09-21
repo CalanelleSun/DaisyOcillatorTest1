@@ -23,12 +23,23 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 	}
 }
 
+
 void ProcessADC(){
-	AdcChannelConfig adcConfig;
-	adcConfig.InitSingle(hw.GetPin(21));
-	hw.adc.Init(&adcConfig,1);
-	hw.adc.Start();
 	
+
+	Led led1;	
+	led1.Init(hw.GetPin(1), false); //false = uninverted value
+
+	AdcChannelConfig adcConfig; //adc cofiguration stored here
+	adcConfig.InitSingle(hw.GetPin(21)); //configure GPIO21 as adc input 
+	
+	hw.adc.Init(&adcConfig,1); //initialize the adc with the above config
+	hw.adc.Start(); //start reading values	
+}
+
+void OscSettings(){
+	//fmOsc1.Init(samplerate);
+
 }
 
 int main(void)
@@ -37,11 +48,13 @@ int main(void)
 	hw.Init();
 	hw.SetAudioBlockSize(4); // number of samples handled per callback
 	hw.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
-	
+	float samplerate = hw.AudioSampleRate();
+
+	ProcessADC();	
 	
 	hw.StartAudio(AudioCallback);
 
-	fmOsc1.Init(hw.AudioSampleRate);
+	
 	
 	
 
